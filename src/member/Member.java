@@ -1,11 +1,8 @@
 package member;
 
-import java.util.Scanner;
-
 // TODO: 2023-06-27 회원 엔티티
 public class Member {
 
-    Scanner kb = new Scanner(System.in);
 //    private int id;
     private String name;
     private String nickName;
