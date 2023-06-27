@@ -1,9 +1,9 @@
 package member;
 
 import java.io.*;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
-import java.util.TooManyListenersException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -16,21 +16,22 @@ public class MemberService {
             new FileReader(file, UTF_8)
     );
     BufferedWriter memberListWriter = new BufferedWriter(
-            new FileWriter("C:\\Users\\gram15\\Desktop\\SWedu\\shop\\shop\\memberList.txt", true)
+            new FileWriter(file, true)
     );
     // TODO: 2023-06-27 멤버 변수
-    private LinkedHashMap<String[], Member> memberList = new LinkedHashMap<>();
-    private StringBuilder sb;
+    private LinkedHashMap<String, Member> memberList = new LinkedHashMap<>();
 
-    public MemberService() throws IOException {}
+    public MemberService() throws IOException {
+    }
 
     // TODO: 2023-06-27 회원 가입
     public void addMember(Member member) {
-        memberList.put(new String[]{member.getName(), member.getPhoneNumber()}, member);
-        String addMember = "\n" + member.getName() + ", " + member.getNickName() + ", "
-                + member.getPhoneNumber() + ", " + member.getAddress();
+        StringBuilder sb = new StringBuilder();
+        memberList.put(member.getName(), member);
+        sb.append(member.getName()).append(" ").append(member.getNickName())
+                .append(" ").append(member.getPhoneNumber()).append(" ").append(member.getAddress()).append("\n");
         try {
-            memberListWriter.write(addMember);
+            memberListWriter.write(sb.toString());
             System.out.println("회원 가입 완료!!");
             memberListWriter.flush();
             memberListWriter.close();
@@ -40,28 +41,57 @@ public class MemberService {
         }
     }
 
-    public Member findMember(String name, String phoneNumber) {
-        return memberList.get(new String[]{name, phoneNumber});
+    public Member findMember(String name) {
+        memberList = ReadInputCheck();
+        return memberList.get(name);
     }
 
     // TODO: 2023-06-27 회원 전체 조회
     public StringBuilder findAllMember() {
-        ReadInputCheck();
+        StringBuilder sb = new StringBuilder();
+        memberList = ReadInputCheck();
+        Iterator<Member> it = memberList.values().iterator();
+        while (it.hasNext()) {
+            Member member = it.next();
+            sb.append(member.getName()).append(" ").append(member.getNickName())
+                    .append(" ").append(member.getPhoneNumber()).append(" ").append(member.getAddress()).append("\n");
+        }
         return sb;
     }
 
     // TODO: 2023-06-27 회원 수정
     public void updateMember(String name, String phoneNumber) {
         System.out.println("수정할 닉네임, 전화번호, 주소를 입력해 주세요.");
+
+        memberList = ReadInputCheck();
+
         String nickName = kb.next();
         String updatePhoneNumber = kb.next();
         String address = kb.next();
-        memberList.put(new String[]{name, phoneNumber}, new Member(name, nickName, updatePhoneNumber, address));
+
+        memberList.put(name, new Member(name, nickName, updatePhoneNumber, address));
+
+        StringBuilder sb = new StringBuilder();
+        memberList = ReadInputCheck();
+        Iterator<Member> it = memberList.values().iterator();
+        while (it.hasNext()) {
+            Member member = it.next();
+            sb.append("\n").append(member.getName()).append(", ").append(member.getNickName()).append(", ")
+                    .append(member.getPhoneNumber()).append(", ").append(member.getAddress());
+        }
+        try {
+            file.delete();
+            file.createNewFile();
+            memberListWriter.write(sb.toString());
+        } catch (IOException e) {
+            System.out.println("회원 수정 오류");
+            e.printStackTrace();
+        }
+
         System.out.println("수정이 완료되었습니다.");
     }
 
-    private void ReadInputCheck() {
-        sb = new StringBuilder();
+    private LinkedHashMap<String, Member> ReadInputCheck() {
         try {
             String memberInfo;
             while ((memberInfo = memberListReader.readLine()) != null) {
@@ -71,13 +101,15 @@ public class MemberService {
                 String phoneNumber = tmp[2];
                 String address = tmp[3];
                 Member member = new Member(name, nickName, phoneNumber, address);
-                memberList.put(new String[]{name, phoneNumber}, member);
-                sb.append(member.getName()).append(" ").append(nickName)
-                        .append(" ").append(phoneNumber).append(" ").append(address).append("\n");
+                memberList.put(name, member);
+//                sb.append(member.getName()).append(" ").append(nickName)
+//                        .append(" ").append(phoneNumber).append(" ").append(address).append("\n");
             }
         } catch (IOException e) {
             System.out.println("회원 목록 조회 오류");
             e.printStackTrace();
         }
+
+        return memberList;
     }
 }
