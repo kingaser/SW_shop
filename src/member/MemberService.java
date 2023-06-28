@@ -31,7 +31,7 @@ public class MemberService {
         sb.append(member.getName()).append(" ").append(member.getNickName())
                 .append(" ").append(member.getPhoneNumber()).append(" ").append(member.getAddress()).append("\n");
         try {
-            memberListWriter.write(sb.toString());
+            memberListWriter.append(sb.toString());
             System.out.println("회원 가입 완료!!");
             memberListWriter.flush();
             memberListWriter.close();
@@ -51,16 +51,13 @@ public class MemberService {
         StringBuilder sb = new StringBuilder();
         memberList = ReadInputCheck();
         Iterator<Member> it = memberList.values().iterator();
-        while (it.hasNext()) {
-            Member member = it.next();
-            sb.append(member.getName()).append(" ").append(member.getNickName())
-                    .append(" ").append(member.getPhoneNumber()).append(" ").append(member.getAddress()).append("\n");
-        }
+        printMember(it, sb);
         return sb;
     }
 
     // TODO: 2023-06-27 회원 수정
-    public void updateMember(String name, String phoneNumber) {
+
+    public void updateMember(String name) {
         System.out.println("수정할 닉네임, 전화번호, 주소를 입력해 주세요.");
 
         memberList = ReadInputCheck();
@@ -74,36 +71,57 @@ public class MemberService {
         StringBuilder sb = new StringBuilder();
         memberList = ReadInputCheck();
         Iterator<Member> it = memberList.values().iterator();
-        while (it.hasNext()) {
-            Member member = it.next();
-            sb.append("\n").append(member.getName()).append(", ").append(member.getNickName()).append(", ")
-                    .append(member.getPhoneNumber()).append(", ").append(member.getAddress());
-        }
+        printMember(it, sb);
+        // 파일 내용 지우고 덮어쓰기
         try {
-            file.delete();
-            file.createNewFile();
+            new FileWriter(file).close();
             memberListWriter.write(sb.toString());
+            memberListWriter.flush();
+            memberListWriter.close();
         } catch (IOException e) {
             System.out.println("회원 수정 오류");
             e.printStackTrace();
+            return;
         }
 
         System.out.println("수정이 완료되었습니다.");
     }
+    // TODO: 2023-06-28 회원 탈퇴
 
+    public void deleteMember(String name) {
+        memberList = ReadInputCheck();
+        memberList.remove(name);
+
+        StringBuilder sb = new StringBuilder();
+        Iterator<Member> it = memberList.values().iterator();
+        printMember(it, sb);
+        // 파일 내용 지우고 덮어쓰기
+        try {
+            new FileWriter(file).close();
+            memberListWriter.write(sb.toString());
+            memberListWriter.flush();
+            memberListWriter.close();
+        } catch (IOException e) {
+            System.out.println("회원 삭제 오류");
+            e.printStackTrace();
+            return;
+        }
+
+        System.out.println("회원 탈퇴 완료!!");
+    }
+
+    // TODO: 2023-06-28 읽어온 파일 Map에 저장
     private LinkedHashMap<String, Member> ReadInputCheck() {
         try {
             String memberInfo;
             while ((memberInfo = memberListReader.readLine()) != null) {
-                String[] tmp = memberInfo.split(", ");
+                String[] tmp = memberInfo.split(" ");
                 String name = tmp[0];
                 String nickName = tmp[1];
                 String phoneNumber = tmp[2];
                 String address = tmp[3];
                 Member member = new Member(name, nickName, phoneNumber, address);
                 memberList.put(name, member);
-//                sb.append(member.getName()).append(" ").append(nickName)
-//                        .append(" ").append(phoneNumber).append(" ").append(address).append("\n");
             }
         } catch (IOException e) {
             System.out.println("회원 목록 조회 오류");
@@ -111,5 +129,14 @@ public class MemberService {
         }
 
         return memberList;
+    }
+
+    // TODO: 2023-06-28 회원 목록 StringBuilder에 저장
+    private static void printMember(Iterator<Member> it, StringBuilder sb) {
+        while (it.hasNext()) {
+            Member member = it.next();
+            sb.append(member.getName()).append(" ").append(member.getNickName())
+                    .append(" ").append(member.getPhoneNumber()).append(" ").append(member.getAddress()).append("\n");
+        }
     }
 }
