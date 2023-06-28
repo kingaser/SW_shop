@@ -43,14 +43,14 @@ public class MemberService {
 
     // TODO: 2023-06-28 회원 조회
     public Member findMember(String name) {
-        memberList = readInputCheck();
+        memberList = readMemberInputCheck();
         return memberList.get(name);
     }
 
     // TODO: 2023-06-27 회원 전체 조회
     public StringBuilder findAllMember() {
         StringBuilder sb = new StringBuilder();
-        memberList = readInputCheck();
+        memberList = readMemberInputCheck();
         Iterator<Member> it = memberList.values().iterator();
         printMember(it, sb);
         return sb;
@@ -61,7 +61,7 @@ public class MemberService {
     public void updateMember(String name) {
         System.out.println("수정할 닉네임, 전화번호, 주소를 입력해 주세요.");
 
-        memberList = readInputCheck();
+        memberList = readMemberInputCheck();
 
         String nickName = kb.next();
         String updatePhoneNumber = kb.next();
@@ -70,7 +70,7 @@ public class MemberService {
         memberList.put(name, new Member(name, nickName, updatePhoneNumber, address));
 
         StringBuilder sb = new StringBuilder();
-        memberList = readInputCheck();
+        memberList = readMemberInputCheck();
         Iterator<Member> it = memberList.values().iterator();
         printMember(it, sb);
         // 파일 내용 지우고 덮어쓰기
@@ -90,7 +90,7 @@ public class MemberService {
     // TODO: 2023-06-28 회원 탈퇴
 
     public void deleteMember(String name) {
-        memberList = readInputCheck();
+        memberList = readMemberInputCheck();
         memberList.remove(name);
 
         StringBuilder sb = new StringBuilder();
@@ -112,7 +112,7 @@ public class MemberService {
     }
 
     // TODO: 2023-06-28 읽어온 파일 Map에 저장
-    private LinkedHashMap<String, Member> readInputCheck() {
+    private LinkedHashMap<String, Member> readMemberInputCheck() {
         try {
             String memberInfo;
             while ((memberInfo = memberListReader.readLine()) != null) {
