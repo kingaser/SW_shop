@@ -31,6 +31,49 @@ public class MemberService {
         }
     }
 
+    public void inputMemberMenu() {
+        while (true) {
+            System.out.println("0. 이전 메뉴(진행 내용 저장)\n1. 회원 가입\n2. 회원 전체 조회\n3. 회원 수정\n4. 회원 탈퇴");
+            int memberMenu = kb.nextInt();
+            if (memberMenu == 0) {
+                saveFile();
+                break;
+            } else if (memberMenu == 1) {
+                System.out.println("이름, 닉네임, 전화 번호, 주소를 입력해 주세요.");
+                String userName = kb.next();
+                String nickName = kb.next();
+                String phoneNumber = kb.next();
+                String address = kb.next();
+                Member member = new Member(1, userName, nickName, phoneNumber, address);
+                addMember(member);
+            } else if (memberMenu == 2) {
+                findAllMember();
+            } else if (memberMenu == 3) {
+                System.out.println("이름을 확인해 주세요.");
+                String userName = kb.next();
+                Member member;
+                try {
+                    member = checkMember(userName);
+                    updateMember(member.getName());
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+            } else if (memberMenu == 4) {
+                System.out.println("이름을 확인해 주세요.");
+                String userName = kb.next();
+                Member member;
+                try {
+                    member = checkMember(userName);
+                    deleteMember(member.getName());
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("잘못된 입력입니다.\n다시 입력해주세요.");
+            }
+        }
+    }
+
     // TODO: 2023-06-27 회원 가입
     public void addMember(Member member) {
         if (!memberList.isEmpty()) {
@@ -54,10 +97,10 @@ public class MemberService {
     }
 
     // TODO: 2023-06-27 회원 전체 조회
-    public StringBuilder findAllMember() {
+    public void findAllMember() {
         StringBuilder sb = new StringBuilder();
         printMember(sb);
-        return sb;
+        System.out.println(sb);
     }
 
     // TODO: 2023-06-27 회원 수정
@@ -126,5 +169,14 @@ public class MemberService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // TODO: 2023-06-28 입력한 이름과 회원 목록에 일치하는 회원유무 확인
+    private Member checkMember(String name) {
+        Member findMember = findMember(name);
+        if (findMember == null) {
+            System.out.println("입력하신 정보와 일치하는 회원이 없습니다.\n카테고리를 다시 선택해주세요.");
+        }
+        return findMember;
     }
 }
