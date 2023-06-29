@@ -11,17 +11,24 @@ public class MemberService {
 
     // TODO: 2023-06-27 파일 / console 입출력
     Scanner kb = new Scanner(System.in);
-    File file = new File("C:\\Users\\gram15\\Desktop\\SWedu\\shop\\shop\\memberList.txt");
+    File file = new File("C:\\Users\\gram15\\Desktop\\SWedu\\shop\\shop\\database\\memberList.txt");
+    BufferedWriter memberListWriter;
     BufferedReader memberListReader = new BufferedReader(
             new FileReader(file, UTF_8)
-    );
-    BufferedWriter memberListWriter = new BufferedWriter(
-            new FileWriter(file, true)
     );
     // TODO: 2023-06-27 멤버 변수
     private LinkedHashMap<String, Member> memberList = new LinkedHashMap<>();
 
     public MemberService() throws IOException {
+        try {
+            memberListWriter = new BufferedWriter(
+                    new FileWriter(file, true)
+            );
+            memberListWriter.write("");
+            memberListWriter.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     // TODO: 2023-06-27 회원 가입
@@ -43,14 +50,14 @@ public class MemberService {
 
     // TODO: 2023-06-28 회원 조회
     public Member findMember(String name) {
-        memberList = readMemberInputCheck();
+        readMemberInputCheck();
         return memberList.get(name);
     }
 
     // TODO: 2023-06-27 회원 전체 조회
     public StringBuilder findAllMember() {
         StringBuilder sb = new StringBuilder();
-        memberList = readMemberInputCheck();
+        readMemberInputCheck();
         Iterator<Member> it = memberList.values().iterator();
         printMember(it, sb);
         return sb;
@@ -61,7 +68,7 @@ public class MemberService {
     public void updateMember(String name) {
         System.out.println("수정할 닉네임, 전화번호, 주소를 입력해 주세요.");
 
-        memberList = readMemberInputCheck();
+        readMemberInputCheck();
 
         String nickName = kb.next();
         String updatePhoneNumber = kb.next();
@@ -70,7 +77,6 @@ public class MemberService {
         memberList.put(name, new Member(name, nickName, updatePhoneNumber, address));
 
         StringBuilder sb = new StringBuilder();
-        memberList = readMemberInputCheck();
         Iterator<Member> it = memberList.values().iterator();
         printMember(it, sb);
         // 파일 내용 지우고 덮어쓰기
@@ -90,7 +96,7 @@ public class MemberService {
     // TODO: 2023-06-28 회원 탈퇴
 
     public void deleteMember(String name) {
-        memberList = readMemberInputCheck();
+        readMemberInputCheck();
         memberList.remove(name);
 
         StringBuilder sb = new StringBuilder();
@@ -112,7 +118,7 @@ public class MemberService {
     }
 
     // TODO: 2023-06-28 읽어온 파일 Map에 저장
-    private LinkedHashMap<String, Member> readMemberInputCheck() {
+    private void readMemberInputCheck() {
         try {
             String memberInfo;
             while ((memberInfo = memberListReader.readLine()) != null) {
@@ -129,7 +135,6 @@ public class MemberService {
             e.printStackTrace();
         }
 
-        return memberList;
     }
 
     // TODO: 2023-06-28 회원 목록 StringBuilder에 저장
