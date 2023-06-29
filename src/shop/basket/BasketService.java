@@ -8,11 +8,13 @@ import member.MemberService;
 import java.io.*;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Scanner;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class BasketService {
 
+    Scanner kb = new Scanner(System.in);
     File file = new File("C:\\Users\\gram15\\Desktop\\SWedu\\shop\\shop\\database\\basketList.txt");
     BufferedWriter basketListWriter;
     BufferedReader basketListReader = new BufferedReader(
@@ -39,6 +41,26 @@ public class BasketService {
 
     ;
 
+    public void inputBasketMenu() {
+        while (true) {
+            System.out.println("0. 이전 메뉴\n1. 장바구니 전체 조회\n2. 장바구니에서 상품 삭제");
+            int basketMenu = kb.nextInt();
+            if (basketMenu == 0) {
+                saveFile();
+                break;
+            } else if (basketMenu == 1) {
+                String userName = kb.next();
+                findAllBasketList(userName);
+            } else if (basketMenu == 2) {
+                String userName = kb.next();
+                String itemName = kb.next();
+                deleteBasket(userName, itemName);
+            } else {
+                System.out.println("잘못된 입력입니다.\n다시 입력해주세요.");
+            }
+        }
+    }
+
     // TODO: 2023-06-28 장바구니에 추가
     public void addBasket(String userName) {
         StringBuilder sb = new StringBuilder();
@@ -56,7 +78,7 @@ public class BasketService {
     }
 
     // TODO: 2023-06-28 장바구니 목록 조회
-    public StringBuilder findAllBasketList(String userName) {
+    public void findAllBasketList(String userName) {
         StringBuilder sb = new StringBuilder();
         Iterator<Basket> basketIterator = basketList.values().iterator();
         while (basketIterator.hasNext()) {
@@ -66,7 +88,6 @@ public class BasketService {
                         .append(basket.getItemName()).append(" ").append(basket.getItemPrice()).append("\n");
             }
         }
-        return sb;
     }
 
     // TODO: 2023-06-28 장바구니 목록 삭제
