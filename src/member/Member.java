@@ -9,10 +9,7 @@ public class Member {
     private String phoneNumber;
     private String address;
 
-    public Member() {};
-
     public Member(String name, String nickName, String phoneNumber, String address) {
-//        this.id = id;
         this.name = name;
         this.nickName = nickName;
         this.phoneNumber = phoneNumber;
@@ -20,21 +17,18 @@ public class Member {
     }
 
     public String getName() {
-        return this.name;
-    }
-
-    public String getPhoneNumber() {
-        return this.phoneNumber;
+        return name;
     }
 
     public String getNickName() {
         return nickName;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
     public String getAddress() {
         return address;
     }
-//    public int getId() {
-//        return this.id;
-//    }
 }

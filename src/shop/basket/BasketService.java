@@ -5,25 +5,32 @@ import member.MemberService;
 import shop.Item;
 
 import java.io.*;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class BasketService {
 
-    Scanner kb = new Scanner(System.in);
-    File file = new File("C:\\Users\\gram15\\Desktop\\SWedu\\shop\\shop\\basketList.txt");
+    File file = new File("C:\\Users\\gram15\\Desktop\\SWedu\\shop\\shop\\database\\basketList.txt");
+    BufferedWriter basketListWriter;
     BufferedReader basketListReader = new BufferedReader(
             new FileReader(file, UTF_8)
-    );
-    BufferedWriter basketListWriter = new BufferedWriter(
-            new FileWriter(file, true)
     );
 
     LinkedHashMap<String, Basket> basketList = new LinkedHashMap<>();
     MemberService memberService = new MemberService();
 
     public BasketService() throws IOException {
+        try {
+            basketListWriter = new BufferedWriter(
+                    new FileWriter(file, true)
+            );
+            basketListWriter.write("");
+            basketListWriter.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     ;
@@ -37,6 +44,7 @@ public class BasketService {
         sb.append(member.getName()).append(" ").append(basket.getItemName())
                 .append(" ").append(basket.getItemPrice()).append("\n");
         try {
+            new FileWriter(file).close();
             basketListWriter.append(sb.toString());
             System.out.println("회원 가입 완료!!");
             basketListWriter.flush();
