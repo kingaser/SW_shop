@@ -2,16 +2,24 @@ package shop;
 
 public class Item {
 
+    private int id;
     private String itemName;
     private int price;
     private int stock;
-    private String itemInfo;
 
-    public Item(String itemName, int price, int stock, String itemInfo) {
+    public Item(int id, String itemName, int price, int stock) {
+        this.id = id;
         this.itemName = itemName;
         this.price = price;
         this.stock = stock;
-        this.itemInfo = itemInfo;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getItemName() {
@@ -26,7 +34,4 @@ public class Item {
         return stock;
     }
 
-    public String getItemInfo() {
-        return itemInfo;
-    }
 }
