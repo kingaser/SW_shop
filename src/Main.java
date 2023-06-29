@@ -41,15 +41,16 @@ public class Main {
                 while (true) {
                     System.out.println("0. 이전 메뉴\n1. 회원 가입\n2. 회원 수정\n3. 회원 탈퇴\n4. 회원 전체 조회");
                     int memberMenu = kb.nextInt();
-                    if (memberMenu == 0)
+                    if (memberMenu == 0) {
+                        memberService.saveFile();
                         break;
-                    else if (memberMenu == 1) {
+                    } else if (memberMenu == 1) {
                         System.out.println("이름, 닉네임, 전화 번호, 주소를 입력해 주세요.");
                         String name = kb.next();
                         String nickName = kb.next();
                         String phoneNumber = kb.next();
                         String address = kb.next();
-                        Member member = new Member(name, nickName, phoneNumber, address);
+                        Member member = new Member(1, name, nickName, phoneNumber, address);
                         memberService.addMember(member);
                     } else if (memberMenu == 2) {
                         System.out.println("이름을 확인해 주세요.");
