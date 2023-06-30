@@ -1,27 +1,33 @@
 package shop.basket;
 
+import adminitem.AdminItem;
+import adminitem.AdminItemService;
 import member.Member;
 import member.MemberService;
-import shop.Item;
 
 import java.io.*;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Scanner;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class BasketService {
 
+    Scanner kb = new Scanner(System.in);
     File file = new File("C:\\Users\\gram15\\Desktop\\SWedu\\shop\\shop\\database\\basketList.txt");
     BufferedWriter basketListWriter;
     BufferedReader basketListReader = new BufferedReader(
             new FileReader(file, UTF_8)
     );
 
-    LinkedHashMap<String, Basket> basketList = new LinkedHashMap<>();
+    LinkedHashMap<Integer, Basket> basketList = new LinkedHashMap<>();
     MemberService memberService = new MemberService();
+    AdminItemService adminItemService = new AdminItemService();
+    private int basketId;
 
     public BasketService() throws IOException {
+        readBasketInputCheck();
         try {
             basketListWriter = new BufferedWriter(
                     new FileWriter(file, true)
@@ -35,105 +41,113 @@ public class BasketService {
 
     ;
 
-    // TODO: 2023-06-28 장바구니에 추가
-    public void addBasket(String name, Item item) {
-        StringBuilder sb = new StringBuilder();
-        Member member = memberService.findMember(name);
-        Basket basket = new Basket(member.getName(), item.getItemName(), item.getPrice());
-        basketList.put(basket.getUserName(), basket);
-        sb.append(member.getName()).append(" ").append(basket.getItemName())
-                .append(" ").append(basket.getItemPrice()).append("\n");
-        try {
-            new FileWriter(file).close();
-            basketListWriter.append(sb.toString());
-            System.out.println("회원 가입 완료!!");
-            basketListWriter.flush();
-            basketListWriter.close();
-        } catch (IOException e) {
-            System.out.println("회원 가입 에러");
-            e.printStackTrace();
+    public void inputBasketMenu() {
+        while (true) {
+            System.out.println("0. 이전 메뉴(진행 내용 저장)\n1. 장바구니 전체 조회\n2. 장바구니에서 상품 삭제");
+            int basketMenu = kb.nextInt();
+            if (basketMenu == 0) {
+                saveFile();
+                break;
+            } else if (basketMenu == 1) {
+                String userName = kb.next();
+                findAllBasketList(userName);
+            } else if (basketMenu == 2) {
+                String userName = kb.next();
+                String itemName = kb.next();
+                deleteBasket(userName, itemName);
+            } else {
+                System.out.println("잘못된 입력입니다.\n다시 입력해주세요.");
+            }
         }
     }
 
-    // TODO: 2023-06-28 장바구니 목록 조회
-    public StringBuilder findAllBasketList(String name) {
+    // TODO: 2023-06-28 장바구니에 추가
+    public void addBasket(String userName) {
         StringBuilder sb = new StringBuilder();
-        memberService.findMember(name);
-        basketList = readBasketInputCheck();
-        Iterator<Basket> it = basketList.values().iterator();
-        printBasket(it, sb);
-        return sb;
+        Member member = memberService.findMember(userName);
+        AdminItem adminItem = adminItemService.findItem();
+
+        Basket basket = new Basket(1, member.getName(), adminItem.getItemName(), adminItem.getItemPrice());
+        if (!basketList.isEmpty()) {
+            basketList.put(++basketId, basket);
+            basket.setId(basketId);
+        }
+        sb.append(basket.getId()).append(" ").append(member.getName()).append(" ")
+                .append(basket.getItemName()).append(" ").append(basket.getItemPrice()).append("\n");
+        System.out.println("상품 등록 완료");
+    }
+
+    // TODO: 2023-06-28 장바구니 목록 조회
+    public void findAllBasketList(String userName) {
+        StringBuilder sb = new StringBuilder();
+        Iterator<Basket> basketIterator = basketList.values().iterator();
+        while (basketIterator.hasNext()) {
+            Basket basket = basketIterator.next();
+            if (basket.getUserName().equals(userName)) {
+                sb.append(basket.getId()).append(" ").append(basket.getUserName()).append(" ")
+                        .append(basket.getItemName()).append(" ").append(basket.getItemPrice()).append("\n");
+            }
+        }
     }
 
     // TODO: 2023-06-28 장바구니 목록 삭제
     public void deleteBasket(String userName, String itemName) {
-        memberService.findMember(userName);
-        LinkedHashMap<String, Basket> deleteBasketList = new LinkedHashMap<>();
+        Iterator<Basket> basketIterator = basketList.values().iterator();
+        Basket basket = null;
+        while (basketIterator.hasNext()) {
+            basket = basketIterator.next();
+            if (basket.getUserName().equals(userName) && basket.getItemName().equals(itemName)) {
+                break;
+            }
+        }
+
+        if (basket != null && basketList.containsKey(basket.getId())) {
+            basketList.remove(basket.getId());
+            System.out.println("선택하신 상품을 장바구니에서 삭제하였습니다.");
+        } else {
+            System.out.println("일치하는 상품이 장바구니에 없습니다.");
+        }
+    }
+
+    // TODO: 2023-06-28 읽어온 파일 Map에 저장
+    private void readBasketInputCheck() {
         try {
             String basketInfo;
             while ((basketInfo = basketListReader.readLine()) != null) {
                 String[] tmp = basketInfo.split(" ");
-                String listUserName = tmp[0];
-                String listItemName = tmp[1];
-                int listItemPrice = Integer.parseInt(tmp[2]);
-                Basket basket = new Basket(listUserName, listItemName, listItemPrice);
-                deleteBasketList.put(listUserName + " " + listItemName, basket);
+                int id = Integer.parseInt(tmp[0]);
+                basketId = id;
+                String userName = tmp[1];
+                String itemName = tmp[2];
+                int itemPrice = Integer.parseInt(tmp[2]);
+                Basket basket = new Basket(id, userName, itemName, itemPrice);
+                basketList.put(basket.getId(), basket);
             }
         } catch (IOException e) {
-            System.out.println("회원 목록 조회 오류");
+            System.out.println("장바구니 목록 조회 오류");
             e.printStackTrace();
         }
+    }
 
-        if (deleteBasketList.containsKey(userName + " " + itemName)) {
-            deleteBasketList.remove(userName + " " + itemName);
-            System.out.println("선택하신 제품을 장바구니에서 삭제하였습니다.");
-        } else {
-            System.out.println("일치하는 제품이 장바구니에 없습니다.");
+    private void printBasket(StringBuilder sb) {
+        Iterator<Basket> basketIterator = basketList.values().iterator();
+        while (basketIterator.hasNext()) {
+            Basket basket = basketIterator.next();
+            sb.append(basket.getId()).append(" ").append(basket.getUserName()).append(" ")
+                    .append(basket.getItemName()).append(" ").append(basket.getItemPrice()).append("\n");
         }
+    }
 
+    public void saveFile() {
         StringBuilder sb = new StringBuilder();
-        Iterator<Basket> it = deleteBasketList.values().iterator();
-        printBasket(it, sb);
-        // 파일 내용 지우고 덮어쓰기
+        printBasket(sb);
         try {
             new FileWriter(file).close();
             basketListWriter.write(sb.toString());
             basketListWriter.flush();
             basketListWriter.close();
         } catch (IOException e) {
-            System.out.println("회원 삭제 오류");
             e.printStackTrace();
         }
-
     }
-
-    // TODO: 2023-06-28 읽어온 파일 Map에 저장
-    private LinkedHashMap<String, Basket> readBasketInputCheck() {
-        try {
-            String basketInfo;
-            while ((basketInfo = basketListReader.readLine()) != null) {
-                String[] tmp = basketInfo.split(" ");
-                String userName = tmp[0];
-                String itemName = tmp[1];
-                int itemPrice = Integer.parseInt(tmp[2]);
-                Basket basket = new Basket(userName, itemName, itemPrice);
-                basketList.put(basket.getUserName(), basket);
-            }
-        } catch (IOException e) {
-            System.out.println("회원 목록 조회 오류");
-            e.printStackTrace();
-        }
-
-        return basketList;
-    }
-
-    // TODO: 2023-06-28 장바구니 목록 StringBuilder에 저장
-    private static void printBasket(Iterator<Basket> it, StringBuilder sb) {
-        while (it.hasNext()) {
-            Basket basket = it.next();
-            sb.append(basket.getUserName()).append(" ").append(basket.getItemName())
-                    .append(" ").append(basket.getItemPrice()).append("\n");
-        }
-    }
-
 }
