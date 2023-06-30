@@ -1,7 +1,10 @@
 package member;
 
 import java.io.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Scanner;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -16,7 +19,7 @@ public class MemberService {
     );
     // TODO: 2023-06-27 멤버 변수
     private LinkedHashMap<Integer, Member> memberList = new LinkedHashMap<>();
-    private int singUpId = 0;
+    private int signUp = 0;
 
     public MemberService() throws IOException {
         readMemberInputCheck();
@@ -77,11 +80,13 @@ public class MemberService {
     // TODO: 2023-06-27 회원 가입
     public void addMember(Member member) {
         if (!memberList.isEmpty()) {
-            member.setId(++singUpId);
-            memberList.put(singUpId, member);
+            signUp = Collections.max(memberList.keySet());
+            member.setId(++signUp);
+            memberList.put(signUp, member);
         } else {
             memberList.put(member.getId(), member);
         }
+        System.out.println("회원 가입 완료");
     }
 
     // TODO: 2023-06-28 회원 조회
@@ -135,7 +140,7 @@ public class MemberService {
             while ((memberInfo = memberListReader.readLine()) != null) {
                 String[] tmp = memberInfo.split(" ");
                 int id = Integer.parseInt(tmp[0]);
-                singUpId = id;
+                signUp = id;
                 String name = tmp[1];
                 String nickName = tmp[2];
                 String phoneNumber = tmp[3];
@@ -160,7 +165,7 @@ public class MemberService {
 
     // TODO: 2023-06-28 입력한 이름과 회원 목록에 일치하는 회원유무 확인
 
-    private Member checkMember(String name) {
+    public Member checkMember(String name) {
         Member findMember = findMember(name);
         if (findMember == null) {
             System.out.println("입력하신 정보와 일치하는 회원이 없습니다.\n카테고리를 다시 선택해주세요.");
@@ -172,7 +177,7 @@ public class MemberService {
         printMember(sb);
         try {
             new FileWriter(file).close();
-            memberListWriter.write(sb.toString());
+            memberListWriter.append(sb.toString());
             memberListWriter.flush();
             memberListWriter.close();
         } catch (IOException e) {

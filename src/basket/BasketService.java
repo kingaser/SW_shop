@@ -1,4 +1,4 @@
-package shop.basket;
+package basket;
 
 import adminitem.AdminItem;
 import adminitem.AdminItemService;
@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class BasketService {
+public class BasketService extends AdminItemService {
 
     Scanner kb = new Scanner(System.in);
     File file = new File("C:\\Users\\gram15\\Desktop\\SWedu\\shop\\shop\\database\\basketList.txt");
@@ -23,8 +23,7 @@ public class BasketService {
 
     LinkedHashMap<Integer, Basket> basketList = new LinkedHashMap<>();
     MemberService memberService = new MemberService();
-    AdminItemService adminItemService = new AdminItemService();
-    private int basketId;
+    private int basketId = 0;
 
     public BasketService() throws IOException {
         readBasketInputCheck();
@@ -46,7 +45,7 @@ public class BasketService {
             System.out.println("0. 이전 메뉴(진행 내용 저장)\n1. 장바구니 전체 조회\n2. 장바구니에서 상품 삭제");
             int basketMenu = kb.nextInt();
             if (basketMenu == 0) {
-                saveFile();
+                saveBasketFile();
                 break;
             } else if (basketMenu == 1) {
                 String userName = kb.next();
@@ -62,25 +61,44 @@ public class BasketService {
     }
 
     // TODO: 2023-06-28 장바구니에 추가
-    public void addBasket(String userName) {
+    public void addBasket(String userName, String itemName) {
         StringBuilder sb = new StringBuilder();
         Member member = memberService.findMember(userName);
-        AdminItem adminItem = adminItemService.findItem();
+        Iterator<AdminItem> adminItemIterator = adminItemList.values().iterator();
+        AdminItem adminItem = null;
+        while (adminItemIterator.hasNext()) {
+            adminItem = adminItemIterator.next();
+            if (adminItem.getItemName().equals(itemName)) {
+                break;
+            }
+        }
+
+        if (adminItem == null) {
+            System.out.println("입력하신 상품은 없는 상품입니다.");
+            return;
+        }
 
         Basket basket = new Basket(1, member.getName(), adminItem.getItemName(), adminItem.getItemPrice());
         if (!basketList.isEmpty()) {
             basketList.put(++basketId, basket);
+//                    (++basketId, basket);
             basket.setId(basketId);
         }
+        basketList.put(basket.getId(), basket);
         sb.append(basket.getId()).append(" ").append(member.getName()).append(" ")
                 .append(basket.getItemName()).append(" ").append(basket.getItemPrice()).append("\n");
         System.out.println("상품 등록 완료");
+        saveBasketFile();
     }
 
     // TODO: 2023-06-28 장바구니 목록 조회
     public void findAllBasketList(String userName) {
         StringBuilder sb = new StringBuilder();
         Iterator<Basket> basketIterator = basketList.values().iterator();
+        if (!basketIterator.hasNext()) {
+            System.out.println("장바구니에 담겨있는 상품이 없습니다.");
+            return;
+        }
         while (basketIterator.hasNext()) {
             Basket basket = basketIterator.next();
             if (basket.getUserName().equals(userName)) {
@@ -119,7 +137,7 @@ public class BasketService {
                 basketId = id;
                 String userName = tmp[1];
                 String itemName = tmp[2];
-                int itemPrice = Integer.parseInt(tmp[2]);
+                int itemPrice = Integer.parseInt(tmp[3]);
                 Basket basket = new Basket(id, userName, itemName, itemPrice);
                 basketList.put(basket.getId(), basket);
             }
@@ -138,7 +156,7 @@ public class BasketService {
         }
     }
 
-    public void saveFile() {
+    public void saveBasketFile() {
         StringBuilder sb = new StringBuilder();
         printBasket(sb);
         try {

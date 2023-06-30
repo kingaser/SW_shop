@@ -1,17 +1,19 @@
-package shop.basket;
+package purchase;
 
-public class Basket {
+public class Purchase {
 
     private int id;
     private String userName;
     private String itemName;
     private int itemPrice;
+    private int quantity;
 
-    public Basket(int id, String userName, String itemName, int itemPrice) {
+    public Purchase(int id, String userName, String itemName, int itemPrice, int quantity) {
         this.id = id;
         this.userName = userName;
         this.itemName = itemName;
         this.itemPrice = itemPrice;
+        this.quantity = quantity;
     }
 
     public int getId() {
@@ -34,4 +36,7 @@ public class Basket {
         return itemPrice;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
 }

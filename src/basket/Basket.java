@@ -1,17 +1,17 @@
-package shop;
+package basket;
 
-public class ShoppingList {
+public class Basket {
 
     private int id;
+    private String userName;
     private String itemName;
     private int itemPrice;
-    private int quantity;
 
-    public ShoppingList(int id, String itemName, int itemPrice, int quantity) {
+    public Basket(int id, String userName, String itemName, int itemPrice) {
         this.id = id;
+        this.userName = userName;
         this.itemName = itemName;
         this.itemPrice = itemPrice;
-        this.quantity = quantity;
     }
 
     public int getId() {
@@ -22,6 +22,10 @@ public class ShoppingList {
         this.id = id;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
     public String getItemName() {
         return itemName;
     }
@@ -30,7 +34,4 @@ public class ShoppingList {
         return itemPrice;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
 }
