@@ -1,25 +1,15 @@
-package shop;
+package adminitem;
 
-public class ShoppingList {
+public class AdminItem {
 
-    private int id;
     private String itemName;
     private int itemPrice;
     private int quantity;
 
-    public ShoppingList(int id, String itemName, int itemPrice, int quantity) {
-        this.id = id;
+    public AdminItem(String itemName, int itemPrice, int quantity) {
         this.itemName = itemName;
         this.itemPrice = itemPrice;
         this.quantity = quantity;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getItemName() {
