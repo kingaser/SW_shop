@@ -1,11 +1,8 @@
 package adminitem;
 
-import member.Member;
-
 import java.io.*;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -88,7 +85,7 @@ public class AdminItemService {
         }
     }
 
-    public void findItem() {
+    public AdminItem findItem() {
         System.out.println("조회할 상품 이름을 입력하세요.");
         String itemName = kb.next();
 
@@ -101,6 +98,7 @@ public class AdminItemService {
             System.out.println("가격 = " + findItem.getItemPrice());
             System.out.println("재고수량 = " + findItem.getQuantity());
         }
+        return findItem;
     }
 
     public void findAllItem() {
