@@ -158,7 +158,16 @@ public class MemberService {
         }
     }
 
-    public void saveFile() {
+    // TODO: 2023-06-28 입력한 이름과 회원 목록에 일치하는 회원유무 확인
+
+    private Member checkMember(String name) {
+        Member findMember = findMember(name);
+        if (findMember == null) {
+            System.out.println("입력하신 정보와 일치하는 회원이 없습니다.\n카테고리를 다시 선택해주세요.");
+        }
+        return findMember;
+    }
+    private void saveFile() {
         StringBuilder sb = new StringBuilder();
         printMember(sb);
         try {
@@ -169,14 +178,5 @@ public class MemberService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    // TODO: 2023-06-28 입력한 이름과 회원 목록에 일치하는 회원유무 확인
-    private Member checkMember(String name) {
-        Member findMember = findMember(name);
-        if (findMember == null) {
-            System.out.println("입력하신 정보와 일치하는 회원이 없습니다.\n카테고리를 다시 선택해주세요.");
-        }
-        return findMember;
     }
 }
