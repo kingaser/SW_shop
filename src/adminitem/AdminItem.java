@@ -2,16 +2,22 @@ package adminitem;
 
 public class AdminItem {
 
+    private int id;
     private String itemName;
     private int itemPrice;
     private int quantity;
 
-    public AdminItem(String itemName, int itemPrice, int quantity) {
+    //    상품명, 가격 , 재고의 참조변수
+    public AdminItem(int id, String itemName, int itemPrice, int quantity) {
+        this.id = id;
         this.itemName = itemName;
         this.itemPrice = itemPrice;
         this.quantity = quantity;
     }
 
+    public int getId(){
+        return id;
+    }
     public String getItemName() {
         return itemName;
     }
@@ -22,5 +28,9 @@ public class AdminItem {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }
