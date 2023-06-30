@@ -43,7 +43,7 @@ public class BasketService {
 
     public void inputBasketMenu() {
         while (true) {
-            System.out.println("0. 이전 메뉴\n1. 장바구니 전체 조회\n2. 장바구니에서 상품 삭제");
+            System.out.println("0. 이전 메뉴(진행 내용 저장)\n1. 장바구니 전체 조회\n2. 장바구니에서 상품 삭제");
             int basketMenu = kb.nextInt();
             if (basketMenu == 0) {
                 saveFile();
@@ -106,7 +106,6 @@ public class BasketService {
             System.out.println("선택하신 상품을 장바구니에서 삭제하였습니다.");
         } else {
             System.out.println("일치하는 상품이 장바구니에 없습니다.");
-
         }
     }
 
