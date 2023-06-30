@@ -1,7 +1,7 @@
 import adminitem.AdminItemService;
-import member.Member;
 import member.MemberService;
-import shop.basket.BasketService;
+import basket.BasketService;
+import purchase.PurchaseService;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -13,6 +13,7 @@ public class Main {
         MemberService memberService = new MemberService();
         AdminItemService adminItemService = new AdminItemService();
         BasketService basketService = new BasketService();
+        PurchaseService purchaseService = new PurchaseService();
 
         System.out.println("스포츠 몰\n");
 
@@ -24,7 +25,7 @@ public class Main {
                 break;
             } else if (category == 1) {
                 while (true) {
-                    System.out.print("0. 이전 메뉴\n1. 장바구니\n2. 구매\n3. 구매 목록");
+                    System.out.println("0. 이전 메뉴\n1. 장바구니\n2. 구매\n3. 구매 목록");
                     int shoppingMenu = kb.nextInt();
                     if (shoppingMenu == 0) {
                         System.out.println("이전 메뉴로 돌아갑니다.");
@@ -32,7 +33,7 @@ public class Main {
                     } else if (shoppingMenu == 1) {
                         basketService.inputBasketMenu();
                     } else if (shoppingMenu == 2) {
-                        System.out.println("아이템");
+                        purchaseService.inputPurchaseMenu();
                     } else if (shoppingMenu == 3) {
                         System.out.println("구매 목록");
                     } else {
