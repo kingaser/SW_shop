@@ -1,6 +1,6 @@
-package adminitem;
+package item;
 
-public class AdminItem {
+public class Item {
 
     private int id;
     private String itemName;
@@ -8,7 +8,7 @@ public class AdminItem {
     private int quantity;
 
     //    상품명, 가격 , 재고의 참조변수
-    public AdminItem(int id, String itemName, int itemPrice, int quantity) {
+    public Item(int id, String itemName, int itemPrice, int quantity) {
         this.id = id;
         this.itemName = itemName;
         this.itemPrice = itemPrice;
