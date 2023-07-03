@@ -1,4 +1,4 @@
-import adminitem.AdminItemService;
+import item.ItemService;
 import member.MemberService;
 import basket.BasketService;
 import purchase.PurchaseService;
@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         Scanner kb = new Scanner(System.in);
         MemberService memberService = new MemberService();
-        AdminItemService adminItemService = new AdminItemService();
+        ItemService itemService = new ItemService();
         BasketService basketService = new BasketService();
         PurchaseService purchaseService = new PurchaseService();
 
@@ -46,7 +46,7 @@ public class Main {
             } else if (category == 2) {
                 memberService.inputMemberMenu();
             } else if (category == 3) {
-                adminItemService.choiceNumber();
+                itemService.choiceNumber();
             } else {
                 System.out.println("잘못된 입력입니다.\n다시 입력해주세요.");
             }
