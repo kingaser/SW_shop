@@ -1,4 +1,4 @@
-package adminitem;
+package item;
 
 import java.io.*;
 import java.util.Iterator;
@@ -7,27 +7,27 @@ import java.util.Scanner;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class AdminItemService {
+public class ItemService {
     int num = 0;
 
     Scanner kb = new Scanner(System.in);
-    File file = new File("C:\\Users\\gram15\\Desktop\\SWedu\\shop\\shop\\database\\adminItemList.txt");
-    BufferedWriter adminItemListWriter;
+    File file = new File("C:\\Users\\gram15\\Desktop\\SWedu\\shop\\shop\\database\\itemList.txt");
+    BufferedWriter itemListWriter;
 
-    BufferedReader adminItemListReader = new BufferedReader(
+    BufferedReader itemListReader = new BufferedReader(
             new FileReader(file, UTF_8));
 
 
-    protected LinkedHashMap<Integer, AdminItem> adminItemList = new LinkedHashMap<>();
+    protected LinkedHashMap<Integer, Item> itemList = new LinkedHashMap<>();
 
-    public AdminItemService() throws IOException {
-        readAdminItemInputCheck();
+    public ItemService() throws IOException {
+        readItemInputCheck();
         try {
-            adminItemListWriter = new BufferedWriter(
+            itemListWriter = new BufferedWriter(
                     new FileWriter(file, true)
             );
-            adminItemListWriter.write("");
-            adminItemListWriter.flush();
+            itemListWriter.write("");
+            itemListWriter.flush();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -51,19 +51,21 @@ public class AdminItemService {
             } else if (itemMenu == 5) {
                 findAllItem();
             } else if (itemMenu == 0) {
-                saveAdminItemFile();
+                saveItemFile();
                 break;
             }
         }
     }
 
+    // 상품 구매 로직
     public void addItem() {
         System.out.println("상품명을 입력하세요.");
         String itemName = kb.next();
-        Iterator<AdminItem> adminItemIterator = adminItemList.values().iterator();
-        while (adminItemIterator.hasNext()) {
-            AdminItem adminItem = adminItemIterator.next();
-            if (adminItem.getItemName().equals(itemName)) {
+        // 상품 목록 받아서 입력받은 상품 이름과 같은 상품이 있는지 확인
+        Iterator<Item> itemIterator = itemList.values().iterator();
+        while (itemIterator.hasNext()) {
+            Item item = itemIterator.next();
+            if (item.getItemName().equals(itemName)) {
                 System.out.println(itemName + "은(는) 이미 등록된 상품명 입니다.");
                 return;
             }
@@ -75,22 +77,27 @@ public class AdminItemService {
         int itemPrice = kb.nextInt();
         System.out.print("재고수량 = ");
         int quantity = kb.nextInt();
+        // 고유 ID 값 num
         num++;
-        AdminItem addItem = new AdminItem(num, itemName, itemPrice, quantity);
+        // 입력받은 정보로 상품 객체 만듬
+        Item item = new Item(num, itemName, itemPrice, quantity);
         System.out.println(itemName + " 상품 등록완료!!");
 
-        adminItemList.put(addItem.getId(), addItem);
+        itemList.put(item.getId(), item);
         StringBuilder sb = new StringBuilder();
-        sb.append(addItem.getId()).append(" ").append(addItem.getItemName()).append(" ").append(addItem.getItemPrice())
-                .append("원 ").append(addItem.getQuantity()).append("개 ").append("\n");
+        // DB 저장시 사용될 포맷
+        sb.append(item.getId()).append(" ")
+                .append(item.getItemName()).append(" ")
+                .append(item.getItemPrice()).append("원 ")
+                .append(item.getQuantity()).append("개 ").append("\n");
     }
 
     public void findItem() {
         System.out.println("조회할 상품명를 입력하세요.");
         String itemName = kb.next();
-        AdminItem findItem = null;
-        for (int itemId : adminItemList.keySet()) {
-            findItem = adminItemList.get(itemId);
+        Item findItem = null;
+        for (int itemId : itemList.keySet()) {
+            findItem = itemList.get(itemId);
             if (findItem.getItemName().equals(itemName)) {
                 System.out.println(itemName + "의 상품 정보");
                 System.out.println("고유번호 = " + findItem.getId());
@@ -105,13 +112,13 @@ public class AdminItemService {
     }
 
     public void findAllItem() {
-        Iterator<AdminItem> adminItems = adminItemList.values().iterator();
-        if (!adminItems.hasNext()) {
+        Iterator<Item> itemIterator = itemList.values().iterator();
+        if (!itemIterator.hasNext()) {
             System.out.println("등록된 상품이 없습니다.");
         } else {
             System.out.println("전체 상품 목록");
-            while (adminItems.hasNext()) {
-                AdminItem item = adminItems.next();
+            while (itemIterator.hasNext()) {
+                Item item = itemIterator.next();
                 System.out.println(item.getId() + " " + item.getItemName() + " " + item.getItemPrice() + "원 " + item.getQuantity()+"개 ");
             }
         }
@@ -126,15 +133,15 @@ public class AdminItemService {
         int updateItemPrice;
         int updateQuantity;
 
-        Iterator<AdminItem> adminItemIterator = adminItemList.values().iterator();
-        if (!adminItemIterator.hasNext()) {
+        Iterator<Item> itemIterator = itemList.values().iterator();
+        if (!itemIterator.hasNext()) {
             System.out.println("등록된 상품이 없습니다.");
             return;
         }
-        while (adminItemIterator.hasNext()) {
-            AdminItem adminItem = adminItemIterator.next();
-            if (adminItem.getItemName().equals(itemName)) {
-                id = adminItem.getId();
+        while (itemIterator.hasNext()) {
+            Item item = itemIterator.next();
+            if (item.getItemName().equals(itemName)) {
+                id = item.getId();
                 System.out.print("이름 = ");
                 updateItemName = kb.next();
                 System.out.print("가격 = ");
@@ -146,15 +153,12 @@ public class AdminItemService {
                 return;
             }
 
-//            updateItemName = updateItemName.replace(itemName,updateItemName);
-            AdminItem updateAdminItem = new AdminItem(id, updateItemName, updateItemPrice, updateQuantity);
-//            adminItemList.remove(adminItem.getItemName());
-            updateItemName = updateItemName.replace(itemName, updateItemName);
-            adminItemList.put(updateAdminItem.getId(), updateAdminItem);
+            Item updateItem = new Item(id, updateItemName, updateItemPrice, updateQuantity);
+            itemList.put(updateItem.getId(), updateItem);
             System.out.println("수정완료!!");
 
             StringBuilder sb = new StringBuilder();
-            printAdminItem(sb);
+            printItem(sb);
         }
     }
 
@@ -162,11 +166,11 @@ public class AdminItemService {
         System.out.println("삭제할 상품명을 입력하세요.");
         String itemName = kb.next();
         boolean itemFound = false;
-        Iterator<AdminItem> adminItemIterator = adminItemList.values().iterator();
-        while (adminItemIterator.hasNext()) {
-            AdminItem adminItem = adminItemIterator.next();
-            if (adminItem.getItemName().equals(itemName)) {
-                adminItemList.remove(adminItem.getId());
+        Iterator<Item> itemIterator = itemList.values().iterator();
+        while (itemIterator.hasNext()) {
+            Item item = itemIterator.next();
+            if (item.getItemName().equals(itemName)) {
+                itemList.remove(item.getId());
                 itemFound = true;
                 System.out.println(itemName + " 의 상품을 삭제했습니다.");
                 break;
@@ -177,15 +181,15 @@ public class AdminItemService {
 
 
         StringBuilder sb = new StringBuilder();
-        printAdminItem(sb);
+        printItem(sb);
     }
 
     // TODO: 2023-06-29 읽어온 파일 Map에 저장
-    private void readAdminItemInputCheck() {
+    private void readItemInputCheck() {
         try {
 
             String itemInfo;
-            while ((itemInfo = adminItemListReader.readLine()) != null) {
+            while ((itemInfo = itemListReader.readLine()) != null) {
                 String[] tmp = itemInfo.split(" ");
                 int id = Integer.parseInt(tmp[0]);
 
@@ -193,8 +197,8 @@ public class AdminItemService {
                 int itemPrice = Integer.parseInt(tmp[2]);
                 int quantity = Integer.parseInt(tmp[3]);
                 num = id + 1;
-                AdminItem adminItem = new AdminItem(id, itemName, itemPrice, quantity);
-                adminItemList.put(Integer.valueOf(adminItem.getId()), adminItem);
+                Item item = new Item(id, itemName, itemPrice, quantity);
+                itemList.put(Integer.valueOf(item.getId()), item);
             }
         } catch (IOException e) {
             System.out.println("상품 목록 조회 오류");
@@ -203,25 +207,25 @@ public class AdminItemService {
     }
 
     // TODO: 2023-06-29 Item 목록 Map에 저장
-    private void printAdminItem(StringBuilder sb) {
-        Iterator<AdminItem> adminItemIterator = adminItemList.values().iterator();
-        while (adminItemIterator.hasNext()) {
-            AdminItem adminItem = adminItemIterator.next();
-            sb.append(adminItem.getId()).append(" ")
-                    .append(adminItem.getItemName()).append(" ")
-                    .append(adminItem.getItemPrice()).append(" ")
-                    .append(adminItem.getQuantity()).append("\n");
+    private void printItem(StringBuilder sb) {
+        Iterator<Item> itemIterator = itemList.values().iterator();
+        while (itemIterator.hasNext()) {
+            Item item = itemIterator.next();
+            sb.append(item.getId()).append(" ")
+                    .append(item.getItemName()).append(" ")
+                    .append(item.getItemPrice()).append(" ")
+                    .append(item.getQuantity()).append("\n");
         }
     }
 
-    protected void saveAdminItemFile() {
+    protected void saveItemFile() {
         StringBuilder sb = new StringBuilder();
-        printAdminItem(sb);
+        printItem(sb);
         try {
             new FileWriter(file).close();
-            adminItemListWriter.append(sb.toString());
-            adminItemListWriter.flush();
-            adminItemListWriter.close();
+            itemListWriter.append(sb.toString());
+            itemListWriter.flush();
+            itemListWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
