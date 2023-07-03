@@ -6,6 +6,7 @@ import member.Member;
 import member.MemberService;
 
 import java.io.*;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
@@ -21,7 +22,7 @@ public class BasketService extends AdminItemService {
             new FileReader(file, UTF_8)
     );
 
-    LinkedHashMap<Integer, Basket> basketList = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, Basket> basketList = new LinkedHashMap<>();
     MemberService memberService = new MemberService();
     private int basketId = 0;
 
@@ -42,15 +43,25 @@ public class BasketService extends AdminItemService {
 
     public void inputBasketMenu() {
         while (true) {
-            System.out.println("0. 이전 메뉴(진행 내용 저장)\n1. 장바구니 전체 조회\n2. 장바구니에서 상품 삭제");
+            System.out.println("0. 이전 메뉴(진행 내용 저장)\n1. 장바구니에 추가\n2. 장바구니 전체 조회\n3. 장바구니에서 상품 삭제");
             int basketMenu = kb.nextInt();
             if (basketMenu == 0) {
                 saveBasketFile();
                 break;
             } else if (basketMenu == 1) {
+                System.out.println("이름을 입력해주세요.");
+                String userName = kb.next();
+                findAllItem();
+                System.out.println("장바구니에 담을 상품의 이름을 입력해 주세요");
+                String itemName = kb.next();
+                addBasket(userName, itemName);
+                break;
+            } else if (basketMenu == 2) {
+                System.out.println("이름을 입력해주세요.");
                 String userName = kb.next();
                 findAllBasketList(userName);
-            } else if (basketMenu == 2) {
+            } else if (basketMenu == 3) {
+                System.out.println("이름과, 장바구니에서 삭제할 상품의 이름을 입력해주세요.");
                 String userName = kb.next();
                 String itemName = kb.next();
                 deleteBasket(userName, itemName);
@@ -62,7 +73,6 @@ public class BasketService extends AdminItemService {
 
     // TODO: 2023-06-28 장바구니에 추가
     public void addBasket(String userName, String itemName) {
-        StringBuilder sb = new StringBuilder();
         Member member = memberService.findMember(userName);
         Iterator<AdminItem> adminItemIterator = adminItemList.values().iterator();
         AdminItem adminItem = null;
@@ -80,15 +90,13 @@ public class BasketService extends AdminItemService {
 
         Basket basket = new Basket(1, member.getName(), adminItem.getItemName(), adminItem.getItemPrice());
         if (!basketList.isEmpty()) {
-            basketList.put(++basketId, basket);
-//                    (++basketId, basket);
+            basketId = Collections.max(basketList.keySet()) + 1;
             basket.setId(basketId);
+            basketList.put(basketId, basket);
+        } else {
+            basketList.put(basket.getId(), basket);
         }
-        basketList.put(basket.getId(), basket);
-        sb.append(basket.getId()).append(" ").append(member.getName()).append(" ")
-                .append(basket.getItemName()).append(" ").append(basket.getItemPrice()).append("\n");
         System.out.println("상품 등록 완료");
-        saveBasketFile();
     }
 
     // TODO: 2023-06-28 장바구니 목록 조회
@@ -102,10 +110,13 @@ public class BasketService extends AdminItemService {
         while (basketIterator.hasNext()) {
             Basket basket = basketIterator.next();
             if (basket.getUserName().equals(userName)) {
-                sb.append(basket.getId()).append(" ").append(basket.getUserName()).append(" ")
-                        .append(basket.getItemName()).append(" ").append(basket.getItemPrice()).append("\n");
+                sb.append(basket.getId()).append(" ")
+                        .append(basket.getUserName()).append(" ")
+                        .append(basket.getItemName()).append(" ")
+                        .append(basket.getItemPrice()).append("\n");
             }
         }
+        System.out.println(userName + "님의 장바구니 목록!!\n" + sb);
     }
 
     // TODO: 2023-06-28 장바구니 목록 삭제
@@ -151,8 +162,10 @@ public class BasketService extends AdminItemService {
         Iterator<Basket> basketIterator = basketList.values().iterator();
         while (basketIterator.hasNext()) {
             Basket basket = basketIterator.next();
-            sb.append(basket.getId()).append(" ").append(basket.getUserName()).append(" ")
-                    .append(basket.getItemName()).append(" ").append(basket.getItemPrice()).append("\n");
+            sb.append(basket.getId()).append(" ")
+                    .append(basket.getUserName()).append(" ")
+                    .append(basket.getItemName()).append(" ")
+                    .append(basket.getItemPrice()).append("\n");
         }
     }
 
@@ -161,7 +174,7 @@ public class BasketService extends AdminItemService {
         printBasket(sb);
         try {
             new FileWriter(file).close();
-            basketListWriter.write(sb.toString());
+            basketListWriter.append(sb.toString());
             basketListWriter.flush();
             basketListWriter.close();
         } catch (IOException e) {
