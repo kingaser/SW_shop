@@ -28,7 +28,6 @@ public class Main {
                     System.out.println("0. 이전 메뉴\n1. 장바구니\n2. 구매\n3. 구매 목록");
                     int shoppingMenu = kb.nextInt();
                     if (shoppingMenu == 0) {
-                        basketService.saveBasketFile();
                         System.out.println("이전 메뉴로 돌아갑니다.");
                         break;
                     } else if (shoppingMenu == 1) {
