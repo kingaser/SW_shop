@@ -101,16 +101,15 @@ public class AdminItemService {
         }
         if (findItem == null) {
             System.out.println(itemName + "의 정보가 없습니다.");
-            return;
         }
     }
 
     public void findAllItem() {
-        System.out.println("전체 상품 목록");
         Iterator<AdminItem> adminItems = adminItemList.values().iterator();
         if (!adminItems.hasNext()) {
-            System.out.println("등록된");
+            System.out.println("등록된 상품이 없습니다.");
         } else {
+            System.out.println("전체 상품 목록");
             while (adminItems.hasNext()) {
                 AdminItem item = adminItems.next();
                 System.out.println(item.getId() + " " + item.getItemName() + " " + item.getItemPrice() + "원 " + item.getQuantity()+"개 ");
@@ -208,8 +207,10 @@ public class AdminItemService {
         Iterator<AdminItem> adminItemIterator = adminItemList.values().iterator();
         while (adminItemIterator.hasNext()) {
             AdminItem adminItem = adminItemIterator.next();
-            sb.append(adminItem.getId()).append(" ").append(adminItem.getItemName()).append(" ")
-                    .append(adminItem.getItemPrice()).append(" ").append(adminItem.getQuantity()).append("\n");
+            sb.append(adminItem.getId()).append(" ")
+                    .append(adminItem.getItemName()).append(" ")
+                    .append(adminItem.getItemPrice()).append(" ")
+                    .append(adminItem.getQuantity()).append("\n");
         }
     }
 
@@ -218,7 +219,7 @@ public class AdminItemService {
         printAdminItem(sb);
         try {
             new FileWriter(file).close();
-            adminItemListWriter.write(sb.toString());
+            adminItemListWriter.append(sb.toString());
             adminItemListWriter.flush();
             adminItemListWriter.close();
         } catch (IOException e) {
