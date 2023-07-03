@@ -1,7 +1,7 @@
 package purchase;
 
-import adminitem.AdminItem;
-import adminitem.AdminItemService;
+import item.Item;
+import item.ItemService;
 import member.Member;
 import member.MemberService;
 
@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class PurchaseService extends AdminItemService {
+public class PurchaseService extends ItemService {
 
     // TODO: 2023-06-30 database 입출력 설정
     Scanner kb = new Scanner(System.in);
@@ -48,7 +48,7 @@ public class PurchaseService extends AdminItemService {
             int purchaseMenu = kb.nextInt();
             if (purchaseMenu == 0) {
                 savePurchaseFile();
-                saveAdminItemFile();
+                saveItemFile();
                 break;
             } else if (purchaseMenu == 1) {
                 System.out.println("회원 이름을 입력해주세요.");
@@ -66,27 +66,27 @@ public class PurchaseService extends AdminItemService {
 
     public void addPurchase(String userName, String itemName, int itemCount) {
         Member member = memberService.checkMember(userName);
-        Iterator<AdminItem> adminItemIterator = adminItemList.values().iterator();
-        AdminItem adminItem = null;
-        while (adminItemIterator.hasNext()) {
-            adminItem = adminItemIterator.next();
-            if (adminItem.getItemName().equals(itemName)) {
+        Iterator<Item> itemIterator = itemList.values().iterator();
+        Item item = null;
+        while (itemIterator.hasNext()) {
+            item = itemIterator.next();
+            if (item.getItemName().equals(itemName)) {
                 break;
             }
         }
 
-        if (adminItem == null) {
+        if (item == null) {
             System.out.println("입력하신 상품은 없는 상품입니다.");
             return;
         }
 
-        if (adminItem.getQuantity() < itemCount) {
+        if (item.getQuantity() < itemCount) {
             System.out.println("입력하신 갯수만큼의 제고가 없습니다.");
             return;
         }
 
-        Purchase purchase = new Purchase(purchaseId, member.getName(), adminItem.getItemName()
-                , adminItem.getItemPrice(), itemCount);
+        Purchase purchase = new Purchase(purchaseId, member.getName(), item.getItemName()
+                , item.getItemPrice(), itemCount);
         if (!purchaseList.isEmpty()) {
             purchaseId = Collections.max(purchaseList.keySet()) + 1;
             purchase.setId(purchaseId);
@@ -96,8 +96,8 @@ public class PurchaseService extends AdminItemService {
         }
         System.out.println("상품 구매 완료");
 
-        adminItem.setQuantity(adminItem.getQuantity() - itemCount);
-        adminItemList.put(adminItem.getId(), adminItem);
+        item.setQuantity(item.getQuantity() - itemCount);
+        itemList.put(item.getId(), item);
     }
 
     public void findAllPurchase(String userName) {

@@ -1,7 +1,7 @@
 package basket;
 
-import adminitem.AdminItem;
-import adminitem.AdminItemService;
+import item.Item;
+import item.ItemService;
 import member.Member;
 import member.MemberService;
 
@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class BasketService extends AdminItemService {
+public class BasketService extends ItemService {
 
     Scanner kb = new Scanner(System.in);
     File file = new File("C:\\Users\\gram15\\Desktop\\SWedu\\shop\\shop\\database\\basketList.txt");
@@ -74,21 +74,21 @@ public class BasketService extends AdminItemService {
     // TODO: 2023-06-28 장바구니에 추가
     public void addBasket(String userName, String itemName) {
         Member member = memberService.findMember(userName);
-        Iterator<AdminItem> adminItemIterator = adminItemList.values().iterator();
-        AdminItem adminItem = null;
-        while (adminItemIterator.hasNext()) {
-            adminItem = adminItemIterator.next();
-            if (adminItem.getItemName().equals(itemName)) {
+        Iterator<Item> itemIterator = itemList.values().iterator();
+        Item item = null;
+        while (itemIterator.hasNext()) {
+            item = itemIterator.next();
+            if (item.getItemName().equals(itemName)) {
                 break;
             }
         }
 
-        if (adminItem == null) {
+        if (item == null) {
             System.out.println("입력하신 상품은 없는 상품입니다.");
             return;
         }
 
-        Basket basket = new Basket(1, member.getName(), adminItem.getItemName(), adminItem.getItemPrice());
+        Basket basket = new Basket(1, member.getName(), item.getItemName(), item.getItemPrice());
         if (!basketList.isEmpty()) {
             basketId = Collections.max(basketList.keySet()) + 1;
             basket.setId(basketId);
