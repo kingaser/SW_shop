@@ -158,8 +158,11 @@ public class MemberService {
         Iterator<Member> memberIterator = memberList.values().iterator();
         while (memberIterator.hasNext()) {
             Member member = memberIterator.next();
-            sb.append(member.getId()).append(" ").append(member.getName()).append(" ").append(member.getNickName())
-                    .append(" ").append(member.getPhoneNumber()).append(" ").append(member.getAddress()).append("\n");
+            sb.append(member.getId()).append(" ")
+                    .append(member.getName()).append(" ")
+                    .append(member.getNickName()).append(" ")
+                    .append(member.getPhoneNumber()).append(" ")
+                    .append(member.getAddress()).append("\n");
         }
     }
 
